@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Absensi</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PDF Maker -->
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/pdfmake.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/vfs_fonts.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>📋 Download Data Absensi</h2>
+
+        <div class="login-section" id="loginSection">
+            <h3>Login Supabase</h3>
+            <input id="email" type="email" placeholder="Email">
+            <input id="password" type="password" placeholder="Password">
+            <button id="loginBtn">Login</button>
+            <p id="loginMessage"></p>
+        </div>
+
+        <div class="dashboard hidden" id="dashboard">
+            <h3>Pilih Kelas</h3>
+            <select id="classDropdown">
+                <option value="">Memuat kelas...</option>
+            </select>
+
+            <button id="downloadBtn">⬇️ Download CSV</button>
+            <button id="downloadPdfBtn">📄 Download PDF</button>
+
+            <p id="status"></p>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
