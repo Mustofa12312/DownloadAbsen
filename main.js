@@ -1,9 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// 🔗 Ganti sesuai project Supabase kamu
+// Supabase
 const supabaseUrl = "https://umwvjkgiabdhjdaafsvr.supabase.co";
 const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtd3Zqa2dpYWJkaGpkYWFmc3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY0MDQzNDAsImV4cCI6MjA3MTk4MDM0MH0.D7k18xqk_V4yT2n7PwYHpYJHaUkgTAwzVzVnF6IU3hY"; // ISI KUNCI ANON ANDA
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtd3Zqa2dpYWJkaGpkYWFmc3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY0MDQzNDAsImV4cCI6MjA3MTk4MDM0MH0.D7k18xqk_V4yT2n7PwYHpYJHaUkgTAwzVzVnF6IU3hY";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // DOM
@@ -18,12 +18,12 @@ const downloadBtn = document.getElementById("downloadBtn");
 const downloadPdfBtn = document.getElementById("downloadPdfBtn");
 const statusText = document.getElementById("status");
 
-// ✅ LOGIN
+// ======================= LOGIN ============================
 loginBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
-  loginMessage.textContent = "🔄 Sedang login...";
 
+  loginMessage.textContent = "🔄 Sedang login...";
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
@@ -36,9 +36,10 @@ loginBtn.addEventListener("click", async () => {
   }
 });
 
-// ✅ LOAD KELAS
+// ======================= LOAD KELAS ============================
 async function loadClasses() {
   statusText.textContent = "🔄 Memuat daftar kelas...";
+
   const { data, error } = await supabase
     .from("classes")
     .select("*")
@@ -57,16 +58,16 @@ async function loadClasses() {
   statusText.textContent = "";
 }
 
-// ✅ DOWNLOAD CSV
+// ======================= DOWNLOAD CSV ============================
 downloadBtn.addEventListener("click", async () => {
   const classId = classDropdown.value;
-  if (!classId) return alert("Pilih kelas terlebih dahulu!");
+  if (!classId) return alert("Pilih kelas!");
 
   statusText.textContent = "🔄 Mengambil data...";
 
   const { data: students } = await supabase
     .from("students")
-    .select("id, name, class_id")
+    .select("id,name")
     .eq("class_id", classId)
     .order("id");
 
@@ -74,13 +75,15 @@ downloadBtn.addEventListener("click", async () => {
     .from("attendance_today_by_room")
     .select("student_id");
 
-  const csvRows = ["No,ID,Nama,Status"];
+  const csv = ["No,ID,Nama,Status"];
+
   students.forEach((s, i) => {
     const hadir = attendance.some((a) => a.student_id === s.id);
-    csvRows.push(`${i + 1},${s.id},"${s.name}",${hadir ? "Hadir" : "Alfa"}`);
+    csv.push(`${i + 1},${s.id},"${s.name}",${hadir ? "Hadir" : "Alfa"}`);
   });
 
-  const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+  const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = `absensi_kelas_${classId}.csv`;
@@ -89,12 +92,12 @@ downloadBtn.addEventListener("click", async () => {
   statusText.textContent = "✅ CSV berhasil diunduh";
 });
 
-// ✅ DOWNLOAD PDF CANTIK + WARNA ALFA MERAH
+// ======================= DOWNLOAD PDF ============================
 downloadPdfBtn.addEventListener("click", async () => {
   const classId = classDropdown.value;
-  if (!classId) return alert("Pilih kelas dahulu!");
+  if (!classId) return alert("Pilih kelas dulu!");
 
-  statusText.textContent = "🔄 Menyusun PDF...";
+  statusText.textContent = "🔄 Membuat PDF...";
 
   const { data: kelas } = await supabase
     .from("classes")
@@ -104,7 +107,7 @@ downloadPdfBtn.addEventListener("click", async () => {
 
   const { data: students } = await supabase
     .from("students")
-    .select("id, name")
+    .select("id,name")
     .eq("class_id", classId)
     .order("id");
 
@@ -132,9 +135,9 @@ downloadPdfBtn.addEventListener("click", async () => {
     const isAlpha = !hadir;
 
     tableBody.push([
-      { text: (i + 1).toString(), fillColor: isAlpha ? "#ffb3b3" : null },
-      { text: s.id.toString(), fillColor: isAlpha ? "#ffb3b3" : null },
-      { text: s.name, fillColor: isAlpha ? "#ffb3b3" : null },
+      { text: (i + 1).toString(), fillColor: isAlpha ? "#ffd4d4" : null },
+      { text: s.id.toString(), fillColor: isAlpha ? "#ffd4d4" : null },
+      { text: s.name, fillColor: isAlpha ? "#ffd4d4" : null },
       {
         text: hadir ? "Hadir" : "Alfa",
         color: isAlpha ? "red" : "black",
@@ -143,17 +146,42 @@ downloadPdfBtn.addEventListener("click", async () => {
     ]);
   });
 
+  // Convert logo ke Base64 agar pasti terbaca
+  const logoBase64 = await loadImageAsBase64("logo_madrasah.png");
+
   const docDefinition = {
-    pageMargins: [40, 50, 40, 40],
+    pageMargins: [40, 60, 40, 60],
+
+    header: {
+      columns: [
+        { image: logoBase64, width: 50 },
+        {
+          text: "MADRASAH",
+          alignment: "center",
+          fontSize: 16,
+          bold: true,
+          margin: [0, 10, 0, 0],
+        },
+      ],
+    },
+
+    background: {
+      text: "ABSENSI SANTRI",
+      color: "gray",
+      opacity: 0.15,
+      bold: true,
+      fontSize: 60,
+      alignment: "center",
+      margin: [0, 200],
+    },
+
     content: [
-      { text: "Daftar Absensi", style: "title", alignment: "center" },
-      { text: `Kelas: ${kelas.class_name}`, style: "sub", alignment: "center" },
       {
-        text: `Tanggal: ${today}`,
-        style: "sub",
-        alignment: "center",
-        margin: [0, 0, 0, 12],
+        text: `Kelas: ${kelas.class_name}\nTanggal: ${today}`,
+        margin: [0, 10],
+        fontSize: 12,
       },
+
       {
         table: {
           headerRows: 1,
@@ -161,15 +189,42 @@ downloadPdfBtn.addEventListener("click", async () => {
           body: tableBody,
         },
         layout: "lightHorizontalLines",
+        margin: [0, 10],
+      },
+
+      {
+        text: "Mohon jika ada kesalahan data, harap hubungi pihak terkait.",
+        alignment: "center",
+        italics: true,
+        fontSize: 9,
+        margin: [0, 20],
       },
     ],
-    styles: {
-      title: { fontSize: 16, bold: true },
-      sub: { fontSize: 11 },
-    },
-    defaultStyle: { fontSize: 10 },
+
+    footer: (currentPage, pageCount) => ({
+      columns: [
+        { text: "Sistem Absensi Madrasah", italics: true, fontSize: 8 },
+        {
+          text: `${currentPage} / ${pageCount}`,
+          alignment: "right",
+          fontSize: 8,
+        },
+      ],
+      margin: [40, 10],
+    }),
   };
 
   pdfMake.createPdf(docDefinition).download(`Absensi_${kelas.class_name}.pdf`);
   statusText.textContent = "✅ PDF berhasil diunduh";
 });
+
+// Fungsi Load Logo
+async function loadImageAsBase64(url) {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
