@@ -150,13 +150,18 @@ downloadPdfBtn.addEventListener("click", async () => {
   const logoBase64 = await loadImageAsBase64("logo_madrasah.png");
 
   const docDefinition = {
-    pageMargins: [40, 60, 40, 60],
+    pageMargins: [70, 60, 70, 60],
 
     header: {
       columns: [
-        { image: logoBase64, width: 50 },
         {
-          text: "MADRASAH",
+          image: logoBase64,
+          width: 70,
+          alignment: left,
+          margin: [30, 20, 0, 10],
+        },
+        {
+          text: "ABSEN MADRASAH",
           alignment: "center",
           fontSize: 16,
           bold: true,
@@ -166,7 +171,7 @@ downloadPdfBtn.addEventListener("click", async () => {
     },
 
     background: {
-      text: "ABSENSI SANTRI",
+      text: "LPNS ABSEN",
       color: "gray",
       opacity: 0.15,
       bold: true,
