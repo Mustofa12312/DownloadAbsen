@@ -1,42 +1,52 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Supabase
+// ================== KONFIG SUPABASE ==================
 const supabaseUrl = "https://umwvjkgiabdhjdaafsvr.supabase.co";
 const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtd3Zqa2dpYWJkaGpkYWFmc3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY0MDQzNDAsImV4cCI6MjA3MTk4MDM0MH0.D7k18xqk_V4yT2n7PwYHpYJHaUkgTAwzVzVnF6IU3hY";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// DOM
+// ================== DOM ELEMENT ==================
 const loginSection = document.getElementById("loginSection");
 const dashboard = document.getElementById("dashboard");
+
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
 const loginMessage = document.getElementById("loginMessage");
+
 const classDropdown = document.getElementById("classDropdown");
 const downloadBtn = document.getElementById("downloadBtn");
 const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+
 const statusText = document.getElementById("status");
 
-// ======================= LOGIN ============================
+// ================== LOGIN ==================
 loginBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
 
   loginMessage.textContent = "🔄 Sedang login...";
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) {
     loginMessage.textContent = "❌ " + error.message;
-  } else {
-    loginMessage.textContent = "✅ Login berhasil";
-    loginSection.classList.add("hidden");
-    dashboard.classList.remove("hidden");
-    loadClasses();
+    return;
   }
+
+  loginMessage.textContent = "✅ Login berhasil";
+
+  loginSection.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+
+  loadClasses();
 });
 
-// ======================= LOAD KELAS ============================
+// ================== LOAD KELAS ==================
 async function loadClasses() {
   statusText.textContent = "🔄 Memuat daftar kelas...";
 
@@ -45,9 +55,13 @@ async function loadClasses() {
     .select("*")
     .order("id");
 
-  if (error) return (statusText.textContent = "❌ Error memuat kelas");
+  if (error) {
+    statusText.textContent = "❌ Gagal memuat kelas";
+    return;
+  }
 
-  classDropdown.innerHTML = '<option value="">Pilih kelas...</option>';
+  classDropdown.innerHTML = `<option value="">Pilih kelas...</option>`;
+
   data.forEach((c) => {
     const opt = document.createElement("option");
     opt.value = c.id;
@@ -58,10 +72,10 @@ async function loadClasses() {
   statusText.textContent = "";
 }
 
-// ======================= DOWNLOAD CSV ============================
+// ================== DOWNLOAD CSV ==================
 downloadBtn.addEventListener("click", async () => {
   const classId = classDropdown.value;
-  if (!classId) return alert("Pilih kelas!");
+  if (!classId) return alert("Pilih kelas terlebih dahulu!");
 
   statusText.textContent = "🔄 Mengambil data...";
 
@@ -79,6 +93,7 @@ downloadBtn.addEventListener("click", async () => {
 
   students.forEach((s, i) => {
     const hadir = attendance.some((a) => a.student_id === s.id);
+
     csv.push(`${i + 1},${s.id},"${s.name}",${hadir ? "Hadir" : "Alfa"}`);
   });
 
@@ -92,25 +107,28 @@ downloadBtn.addEventListener("click", async () => {
   statusText.textContent = "✅ CSV berhasil diunduh";
 });
 
-// ======================= DOWNLOAD PDF ============================
+// ================== DOWNLOAD PDF ==================
 downloadPdfBtn.addEventListener("click", async () => {
   const classId = classDropdown.value;
   if (!classId) return alert("Pilih kelas dulu!");
 
   statusText.textContent = "🔄 Membuat PDF...";
 
+  // Ambil nama kelas
   const { data: kelas } = await supabase
     .from("classes")
     .select("class_name")
     .eq("id", classId)
     .single();
 
+  // Data siswa
   const { data: students } = await supabase
     .from("students")
     .select("id,name")
     .eq("class_id", classId)
     .order("id");
 
+  // Data kehadiran
   const { data: attendance } = await supabase
     .from("attendance_today_by_room")
     .select("student_id");
@@ -121,6 +139,7 @@ downloadPdfBtn.addEventListener("click", async () => {
     year: "numeric",
   });
 
+  // ================== TABEL ==================
   const tableBody = [
     [
       { text: "No", bold: true },
@@ -135,8 +154,8 @@ downloadPdfBtn.addEventListener("click", async () => {
     const isAlpha = !hadir;
 
     tableBody.push([
-      { text: (i + 1).toString(), fillColor: isAlpha ? "#ffd4d4" : null },
-      { text: s.id.toString(), fillColor: isAlpha ? "#ffd4d4" : null },
+      { text: i + 1, fillColor: isAlpha ? "#ffd4d4" : null },
+      { text: s.id, fillColor: isAlpha ? "#ffd4d4" : null },
       { text: s.name, fillColor: isAlpha ? "#ffd4d4" : null },
       {
         text: hadir ? "Hadir" : "Alfa",
@@ -146,39 +165,38 @@ downloadPdfBtn.addEventListener("click", async () => {
     ]);
   });
 
-  // Convert logo ke Base64 agar pasti terbaca
-  const logoBase64 = await loadImageAsBase64("logo_madrasah.png");
+  // ================== LOAD LOGO ==================
+  let logoBase64 = "";
 
+  try {
+    logoBase64 = await loadImageAsBase64("logo_madrasah.png");
+  } catch (e) {
+    console.warn("Logo gagal dimuat, PDF tetap dibuat tanpa logo.");
+  }
+
+  // ================== TEMPLATE PDF ==================
   const docDefinition = {
-    pageMargins: [70, 60, 70, 60],
+    pageMargins: [60, 60, 60, 60],
 
-    header: {
-      columns: [
-        {
-          image: logoBase64,
-          width: 70,
-          alignment: left,
-          margin: [30, 20, 0, 10],
-        },
-        {
-          text: "ABSEN MADRASAH",
-          alignment: "center",
-          fontSize: 16,
-          bold: true,
-          margin: [0, 10, 0, 0],
-        },
-      ],
-    },
-
-    background: {
-      text: "LPNS ABSEN",
-      color: "gray",
-      opacity: 0.15,
-      bold: true,
-      fontSize: 60,
-      alignment: "center",
-      margin: [0, 200],
-    },
+    header: logoBase64
+      ? {
+          columns: [
+            {
+              image: logoBase64,
+              width: 60,
+              alignment: "left",
+              margin: [10, 10, 0, 10],
+            },
+            {
+              text: "ABSEN MADRASAH",
+              alignment: "center",
+              margin: [0, 20, 0, 0],
+              fontSize: 16,
+              bold: true,
+            },
+          ],
+        }
+      : null,
 
     content: [
       {
@@ -201,32 +219,36 @@ downloadPdfBtn.addEventListener("click", async () => {
         text: "Mohon jika ada kesalahan data, harap hubungi pihak terkait.",
         alignment: "center",
         italics: true,
-        fontSize: 9,
-        margin: [0, 20],
+        fontSize: 10,
+        margin: [0, 25],
       },
     ],
 
-    footer: (currentPage, pageCount) => ({
-      columns: [
-        { text: "Sistem Absensi Madrasah", italics: true, fontSize: 8 },
-        {
-          text: `${currentPage} / ${pageCount}`,
-          alignment: "right",
-          fontSize: 8,
-        },
-      ],
-      margin: [40, 10],
-    }),
+    footer: (currentPage, pageCount) => {
+      return {
+        columns: [
+          { text: "Sistem Absensi Madrasah", italics: true, fontSize: 8 },
+          {
+            text: `${currentPage} / ${pageCount}`,
+            alignment: "right",
+            fontSize: 8,
+          },
+        ],
+        margin: [40, 10],
+      };
+    },
   };
 
   pdfMake.createPdf(docDefinition).download(`Absensi_${kelas.class_name}.pdf`);
+
   statusText.textContent = "✅ PDF berhasil diunduh";
 });
 
-// Fungsi Load Logo
+// ================== LOAD LOGO (BASE64) ==================
 async function loadImageAsBase64(url) {
   const res = await fetch(url);
   const blob = await res.blob();
+
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
