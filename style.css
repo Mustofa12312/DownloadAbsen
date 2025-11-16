@@ -55,6 +55,14 @@ button:hover {
     background-color: #1d7d34;
 }
 
+.excel {
+    background-color: #198754;
+}
+
+.excel:hover {
+    background-color: #146c43;
+}
+
 .hidden {
     display: none;
 }

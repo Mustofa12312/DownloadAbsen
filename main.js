@@ -18,6 +18,7 @@ const loginMessage = document.getElementById("loginMessage");
 const classDropdown = document.getElementById("classDropdown");
 const downloadBtn = document.getElementById("downloadBtn");
 const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+const downloadExcelBtn = document.getElementById("downloadExcelBtn");
 
 const statusText = document.getElementById("status");
 
@@ -114,21 +115,18 @@ downloadPdfBtn.addEventListener("click", async () => {
 
   statusText.textContent = "🔄 Membuat PDF...";
 
-  // Ambil nama kelas
   const { data: kelas } = await supabase
     .from("classes")
     .select("class_name")
     .eq("id", classId)
     .single();
 
-  // Data siswa
   const { data: students } = await supabase
     .from("students")
     .select("id,name")
     .eq("class_id", classId)
     .order("id");
 
-  // Data kehadiran
   const { data: attendance } = await supabase
     .from("attendance_today_by_room")
     .select("student_id");
@@ -139,7 +137,6 @@ downloadPdfBtn.addEventListener("click", async () => {
     year: "numeric",
   });
 
-  // ================== TABEL ==================
   const tableBody = [
     [
       { text: "No", bold: true },
@@ -165,16 +162,12 @@ downloadPdfBtn.addEventListener("click", async () => {
     ]);
   });
 
-  // ================== LOAD LOGO ==================
   let logoBase64 = "";
 
   try {
     logoBase64 = await loadImageAsBase64("logo_madrasah.png");
-  } catch (e) {
-    console.warn("Logo gagal dimuat, PDF tetap dibuat tanpa logo.");
-  }
+  } catch (e) {}
 
-  // ================== TEMPLATE PDF ==================
   const docDefinition = {
     pageMargins: [60, 60, 60, 60],
 
@@ -223,25 +216,50 @@ downloadPdfBtn.addEventListener("click", async () => {
         margin: [0, 25],
       },
     ],
-
-    footer: (currentPage, pageCount) => {
-      return {
-        columns: [
-          { text: "Sistem Absensi Madrasah", italics: true, fontSize: 8 },
-          {
-            text: `${currentPage} / ${pageCount}`,
-            alignment: "right",
-            fontSize: 8,
-          },
-        ],
-        margin: [40, 10],
-      };
-    },
   };
 
   pdfMake.createPdf(docDefinition).download(`Absensi_${kelas.class_name}.pdf`);
 
   statusText.textContent = "✅ PDF berhasil diunduh";
+});
+
+// ================== DOWNLOAD EXCEL ==================
+downloadExcelBtn.addEventListener("click", async () => {
+  const classId = classDropdown.value;
+  if (!classId) return alert("Pilih kelas terlebih dahulu!");
+
+  statusText.textContent = "🔄 Membuat file Excel...";
+
+  const { data: kelas } = await supabase
+    .from("classes")
+    .select("class_name")
+    .eq("id", classId)
+    .single();
+
+  const { data: students } = await supabase
+    .from("students")
+    .select("id,name")
+    .eq("class_id", classId)
+    .order("id");
+
+  const { data: attendance } = await supabase
+    .from("attendance_today_by_room")
+    .select("student_id");
+
+  const excelData = [["No", "ID", "Nama", "Status"]];
+
+  students.forEach((s, i) => {
+    const hadir = attendance.some((a) => a.student_id === s.id);
+    excelData.push([i + 1, s.id, s.name, hadir ? "Hadir" : "Alfa"]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(excelData);
+  const wb = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(wb, ws, "Absensi");
+  XLSX.writeFile(wb, `Absensi_${kelas.class_name}.xlsx`);
+
+  statusText.textContent = "✅ Excel berhasil diunduh";
 });
 
 // ================== LOAD LOGO (BASE64) ==================
