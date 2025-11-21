@@ -61,6 +61,11 @@ async function loadClasses() {
     return;
   }
 
+  if (!data) {
+    statusText.textContent = "❌ Data kelas tidak tersedia";
+    return;
+  }
+
   classDropdown.innerHTML = `<option value="">Pilih kelas...</option>`;
 
   data.forEach((c) => {
@@ -80,15 +85,37 @@ downloadBtn.addEventListener("click", async () => {
 
   statusText.textContent = "🔄 Mengambil data...";
 
-  const { data: students } = await supabase
+  const { data: students, error: studentsError } = await supabase
     .from("students")
     .select("id,name")
     .eq("class_id", classId)
     .order("id");
 
-  const { data: attendance } = await supabase
+  if (studentsError) {
+    statusText.textContent = "❌ Gagal mengambil data siswa";
+    alert(studentsError.message);
+    return;
+  }
+
+  if (!students) {
+    statusText.textContent = "❌ Data siswa tidak tersedia";
+    return;
+  }
+
+  const { data: attendance, error: attendanceError } = await supabase
     .from("attendance_today_by_room")
     .select("student_id");
+
+  if (attendanceError) {
+    statusText.textContent = "❌ Gagal mengambil data absensi";
+    alert(attendanceError.message);
+    return;
+  }
+
+  if (!attendance) {
+    statusText.textContent = "❌ Data absensi tidak tersedia";
+    return;
+  }
 
   const csv = ["No,ID,Nama,Status"];
 
@@ -115,21 +142,54 @@ downloadPdfBtn.addEventListener("click", async () => {
 
   statusText.textContent = "🔄 Membuat PDF...";
 
-  const { data: kelas } = await supabase
+  const { data: kelas, error: kelasError } = await supabase
     .from("classes")
     .select("class_name")
     .eq("id", classId)
     .single();
 
-  const { data: students } = await supabase
+  if (kelasError) {
+    statusText.textContent = "❌ Gagal mengambil data kelas";
+    alert(kelasError.message);
+    return;
+  }
+
+  if (!kelas) {
+    statusText.textContent = "❌ Data kelas tidak tersedia";
+    return;
+  }
+
+  const { data: students, error: studentsError } = await supabase
     .from("students")
     .select("id,name")
     .eq("class_id", classId)
     .order("id");
 
-  const { data: attendance } = await supabase
+  if (studentsError) {
+    statusText.textContent = "❌ Gagal mengambil data siswa";
+    alert(studentsError.message);
+    return;
+  }
+
+  if (!students) {
+    statusText.textContent = "❌ Data siswa tidak tersedia";
+    return;
+  }
+
+  const { data: attendance, error: attendanceError } = await supabase
     .from("attendance_today_by_room")
     .select("student_id");
+
+  if (attendanceError) {
+    statusText.textContent = "❌ Gagal mengambil data absensi";
+    alert(attendanceError.message);
+    return;
+  }
+
+  if (!attendance) {
+    statusText.textContent = "❌ Data absensi tidak tersedia";
+    return;
+  }
 
   const today = new Date().toLocaleDateString("id-ID", {
     day: "numeric",
@@ -230,21 +290,54 @@ downloadExcelBtn.addEventListener("click", async () => {
 
   statusText.textContent = "🔄 Membuat file Excel...";
 
-  const { data: kelas } = await supabase
+  const { data: kelas, error: kelasError } = await supabase
     .from("classes")
     .select("class_name")
     .eq("id", classId)
     .single();
 
-  const { data: students } = await supabase
+  if (kelasError) {
+    statusText.textContent = "❌ Gagal mengambil data kelas";
+    alert(kelasError.message);
+    return;
+  }
+
+  if (!kelas) {
+    statusText.textContent = "❌ Data kelas tidak tersedia";
+    return;
+  }
+
+  const { data: students, error: studentsError } = await supabase
     .from("students")
     .select("id,name")
     .eq("class_id", classId)
     .order("id");
 
-  const { data: attendance } = await supabase
+  if (studentsError) {
+    statusText.textContent = "❌ Gagal mengambil data siswa";
+    alert(studentsError.message);
+    return;
+  }
+
+  if (!students) {
+    statusText.textContent = "❌ Data siswa tidak tersedia";
+    return;
+  }
+
+  const { data: attendance, error: attendanceError } = await supabase
     .from("attendance_today_by_room")
     .select("student_id");
+
+  if (attendanceError) {
+    statusText.textContent = "❌ Gagal mengambil data absensi";
+    alert(attendanceError.message);
+    return;
+  }
+
+  if (!attendance) {
+    statusText.textContent = "❌ Data absensi tidak tersedia";
+    return;
+  }
 
   const excelData = [["No", "ID", "Nama", "Status"]];
 
