@@ -1,8 +1,12 @@
-/* ====== RESET ====== */
+/* ====== RESET & GLOBAL ====== */
 *,
 *::before,
 *::after {
     box-sizing: border-box;
+    transition: background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 body {
@@ -15,7 +19,7 @@ body {
     justify-content: center;
     align-items: center;
 
-    /* Background ala iOS */
+    /* Background ala iOS 17 */
     background:
         radial-gradient(circle at 0% 0%, rgba(96, 165, 250, 0.35), transparent 55%),
         radial-gradient(circle at 100% 0%, rgba(167, 139, 250, 0.35), transparent 55%),
@@ -34,17 +38,17 @@ body {
     /* extra top buat logo bulat */
     border-radius: 26px;
 
-    background: rgba(15, 23, 42, 0.35);
+    background: rgba(15, 23, 42, 0.38);
     backdrop-filter: blur(26px);
     -webkit-backdrop-filter: blur(26px);
 
-    border: 1px solid rgba(148, 163, 184, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.75);
 
     /* Glow neon biru/ungu */
     box-shadow:
         0 0 22px rgba(59, 130, 246, 0.45),
         0 0 36px rgba(129, 140, 248, 0.4),
-        0 18px 40px rgba(15, 23, 42, 0.8);
+        0 18px 40px rgba(15, 23, 42, 0.85);
 }
 
 /* ====== LOGO BULAT GLASS DI ATAS CARD ====== */
@@ -60,27 +64,33 @@ body {
     border-radius: 999px;
 
     background:
-        radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.85), transparent 60%),
+        radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.9), transparent 60%),
         conic-gradient(from 200deg, #4f46e5, #0ea5e9, #a855f7, #22c55e, #4f46e5);
-    border: 2px solid rgba(248, 250, 252, 0.85);
+    border: 2px solid rgba(248, 250, 252, 0.9);
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
 
-    /* glow */
     box-shadow:
         0 0 16px rgba(129, 140, 248, 0.9),
-        0 10px 24px rgba(15, 23, 42, 0.85);
+        0 10px 24px rgba(15, 23, 42, 0.9);
 }
 
-/* ====== TITLE ====== */
+/* ====== TITLE & SUBTITLE ====== */
 h2 {
     text-align: center;
-    margin: 0 0 18px;
+    margin: 0 0 8px;
     font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: 0.5px;
     color: #e5e7eb;
+}
+
+#appSubtitle {
+    text-align: center;
+    margin: 0 0 18px;
+    font-size: 0.9rem;
+    opacity: 0.9;
 }
 
 /* ====== SECTION HEADERS ====== */
@@ -98,15 +108,21 @@ h2 {
     margin-top: 4px;
 }
 
+/* Biar dashboard terasa beda dikit ketika muncul */
+.dashboard {
+    margin-top: 10px;
+}
+
 /* ====== INPUT / SELECT ====== */
 input,
 select {
     width: 100%;
     margin: 6px 0;
     padding: 12px 16px;
+
     border-radius: 999px;
     /* pill ala iPhone */
-    border: 1px solid rgba(148, 163, 184, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.8);
     outline: none;
 
     background: rgba(15, 23, 42, 0.55);
@@ -116,7 +132,11 @@ select {
     -webkit-backdrop-filter: blur(18px);
 
     font-size: 0.95rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, background 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease,
+        background 0.2s ease;
 }
 
 input::placeholder {
@@ -128,14 +148,14 @@ select {
     -webkit-appearance: none;
 }
 
-/* Fokus */
+/* Fokus input/select */
 input:focus,
 select:focus {
-    border-color: rgba(129, 140, 248, 0.9);
+    border-color: rgba(129, 140, 248, 0.95);
     box-shadow:
-        0 0 0 2px rgba(129, 140, 248, 0.45),
-        0 0 14px rgba(129, 140, 248, 0.75);
-    background: rgba(15, 23, 42, 0.8);
+        0 0 0 2px rgba(129, 140, 248, 0.5),
+        0 0 14px rgba(129, 140, 248, 0.8);
+    background: rgba(15, 23, 42, 0.82);
 }
 
 /* ====== BUTTON – PILL BUTTON + FLOAT HOVER ====== */
@@ -146,11 +166,12 @@ button {
 
     border-radius: 999px;
     /* pill */
-    border: 1px solid rgba(191, 219, 254, 0.7);
+    border: 1px solid rgba(191, 219, 254, 0.8);
     outline: none;
     cursor: pointer;
 
-    background: radial-gradient(circle at 0% 0%, rgba(248, 250, 252, 0.8), transparent 55%),
+    background:
+        radial-gradient(circle at 0% 0%, rgba(248, 250, 252, 0.85), transparent 55%),
         linear-gradient(135deg, #2563eb, #4f46e5);
     color: #f9fafb;
     font-weight: 600;
@@ -158,7 +179,7 @@ button {
 
     box-shadow:
         0 10px 20px rgba(15, 23, 42, 0.9),
-        0 0 18px rgba(56, 189, 248, 0.5);
+        0 0 18px rgba(56, 189, 248, 0.55);
 
     transition:
         transform 0.2s ease,
@@ -171,8 +192,8 @@ button {
 button:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow:
-        0 14px 30px rgba(15, 23, 42, 0.95),
-        0 0 24px rgba(129, 140, 248, 0.75);
+        0 14px 30px rgba(15, 23, 42, 0.98),
+        0 0 24px rgba(129, 140, 248, 0.8);
     filter: brightness(1.05);
 }
 
@@ -183,35 +204,37 @@ button:active {
         0 0 16px rgba(56, 189, 248, 0.55);
 }
 
-/* Variasi warna tombol */
+/* Variasi warna tombol dashboard */
 #downloadPdfBtn {
-    background: radial-gradient(circle at 0% 0%, rgba(248, 250, 252, 0.9), transparent 55%),
+    background:
+        radial-gradient(circle at 0% 0%, rgba(248, 250, 252, 0.9), transparent 55%),
         linear-gradient(135deg, #22c55e, #16a34a);
-    border-color: rgba(187, 247, 208, 0.85);
+    border-color: rgba(187, 247, 208, 0.9);
     box-shadow:
         0 10px 20px rgba(15, 23, 42, 0.9),
-        0 0 18px rgba(74, 222, 128, 0.6);
+        0 0 18px rgba(74, 222, 128, 0.65);
 }
 
 #downloadPdfBtn:hover {
     box-shadow:
-        0 14px 30px rgba(15, 23, 42, 0.95),
-        0 0 24px rgba(74, 222, 128, 0.9);
+        0 14px 30px rgba(15, 23, 42, 0.98),
+        0 0 24px rgba(74, 222, 128, 0.95);
 }
 
 .excel {
-    background: radial-gradient(circle at 0% 0%, rgba(248, 250, 252, 0.9), transparent 55%),
+    background:
+        radial-gradient(circle at 0% 0%, rgba(248, 250, 252, 0.9), transparent 55%),
         linear-gradient(135deg, #14b8a6, #0f766e);
-    border-color: rgba(153, 246, 228, 0.85);
+    border-color: rgba(153, 246, 228, 0.9);
     box-shadow:
         0 10px 20px rgba(15, 23, 42, 0.9),
-        0 0 18px rgba(45, 212, 191, 0.6);
+        0 0 18px rgba(45, 212, 191, 0.7);
 }
 
 .excel:hover {
     box-shadow:
-        0 14px 30px rgba(15, 23, 42, 0.95),
-        0 0 24px rgba(45, 212, 191, 0.9);
+        0 14px 30px rgba(15, 23, 42, 0.98),
+        0 0 24px rgba(45, 212, 191, 0.95);
 }
 
 /* ====== STATUS & MESSAGE ====== */
@@ -228,9 +251,9 @@ button:active {
     display: none;
 }
 
-/* Row alfa (kalau dipakai di tabel lain) */
+/* Row alfa (kalau dipakai di tabel / tampilan lain) */
 .row-alpha {
-    background-color: rgba(248, 113, 113, 0.15) !important;
+    background-color: rgba(248, 113, 113, 0.18) !important;
     color: #fecaca;
     font-weight: 600;
 }
@@ -251,7 +274,7 @@ button:active {
     }
 }
 
-/* ====== MODE GELAP OTOMATIS (PREFERS-COLOR-SCHEME) ====== */
+/* ====== MODE CERAH OTOMATIS (PREFERS-COLOR-SCHEME: LIGHT) ====== */
 @media (prefers-color-scheme: light) {
     body {
         background:
@@ -263,18 +286,18 @@ button:active {
     }
 
     .container {
-        background: rgba(255, 255, 255, 0.72);
-        border-color: rgba(148, 163, 184, 0.6);
+        background: rgba(255, 255, 255, 0.78);
+        border-color: rgba(148, 163, 184, 0.7);
         box-shadow:
             0 0 20px rgba(59, 130, 246, 0.35),
-            0 18px 40px rgba(15, 23, 42, 0.25);
+            0 18px 40px rgba(15, 23, 42, 0.2);
     }
 
     input,
     select {
-        background: rgba(255, 255, 255, 0.7);
+        background: rgba(255, 255, 255, 0.82);
         color: #0f172a;
-        border-color: rgba(148, 163, 184, 0.8);
+        border-color: rgba(148, 163, 184, 0.85);
     }
 
     input::placeholder {

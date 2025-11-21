@@ -2,10 +2,12 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Download Absensi</title>
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Style glassmorphism -->
+    <link rel="stylesheet" href="style.css" />
 
     <!-- PDFMake -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
@@ -17,18 +19,30 @@
 
 <body>
     <div class="container">
-        <h2>📋 Download Data Absensi</h2>
+        <!-- Judul utama -->
+        <h2> Download Data Absensi </h2>
+        <p id="appSubtitle">
+            Dashboard ini di guanakan untuk mengetahui santri yang tidak hadir, Harap bijak menggunakan data,
+            tidak
+            untuk memerahi dan memukul santri secara berlebihan karana dapat mengurangi kecerdasan
+        </p>
 
-        <div class="login-section" id="loginSection">
-            <h3>Login Supabase</h3>
-            <input id="email" type="email" placeholder="Email">
-            <input id="password" type="password" placeholder="Password">
-            <button id="loginBtn">Login</button>
+        <!-- ====== BAGIAN LOGIN ====== -->
+        <section class="login-section" id="loginSection">
+            <h3>Masuk ke Dashboard</h3>
+
+            <input id="email" type="email" placeholder="Email Supabase" autocomplete="email" />
+            <input id="password" type="password" placeholder="Kata sandi" autocomplete="current-password" />
+
+            <button id="loginBtn">Masuk</button>
+
             <p id="loginMessage"></p>
-        </div>
+        </section>
 
-        <div class="dashboard hidden" id="dashboard">
+        <!-- ====== BAGIAN DASHBOARD (MUNCUL SETELAH LOGIN) ====== -->
+        <section class="dashboard hidden" id="dashboard">
             <h3>Pilih Kelas</h3>
+
             <select id="classDropdown">
                 <option value="">Memuat kelas...</option>
             </select>
@@ -38,9 +52,10 @@
             <button id="downloadExcelBtn" class="excel">📊 Download Excel</button>
 
             <p id="status"></p>
-        </div>
+        </section>
     </div>
 
+    <!-- Script utama -->
     <script type="module" src="main.js"></script>
 </body>
 
